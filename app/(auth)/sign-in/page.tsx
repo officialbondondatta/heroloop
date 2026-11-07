@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 type SignInData = { email: string; password: string }
 const inputClassName =
@@ -15,7 +16,7 @@ const inputClassName =
 export default function SignInPage() {
     const [showPassword, setShowPassword] = useState(false)
     const [submitted, setSubmitted] = useState<SignInData | null>(null)
-
+    const router = useRouter()
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const formData = new FormData(event.currentTarget)
@@ -28,7 +29,10 @@ export default function SignInPage() {
             password: data.password,
             callbackURL: "/"
         })
-        console.log(res)
+        if (res.data?.token) {
+            router.push('/')
+            alert("Sign in succeessful")
+        }
         // Integrate authentication here using data. Credentials stay in memory only.
         setSubmitted(data)
     }

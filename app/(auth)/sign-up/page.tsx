@@ -10,32 +10,46 @@ import {
     FieldGroup,
     FieldLabel,
     FieldDescription,
+    FieldSet,
+    FieldLegend,
 } from "@/components/ui/field"
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
-type SignUpData = { name: string; email: string; password: string }
+type SignUpData = { name: string; email: string; password: string; role: "seeker" | "recruiter" }
 const inputClassName =
     "h-12 w-full rounded-xl border border-white/10 bg-[#191919] px-4 text-sm text-white outline-none transition-colors placeholder:text-neutral-600 focus:border-[#8b80ff] focus:ring-2 focus:ring-[#8b80ff]/20"
 
 export default function SignUpPage() {
     const [showPassword, setShowPassword] = useState(false)
     const [submitted, setSubmitted] = useState<SignUpData | null>(null)
-
+    const router = useRouter()
+    const roleDetails = [
+        { value: "seeker", title: "Find a job", description: "Job seeker" },
+        { value: "recruiter", title: "Hire talent", description: "Recruiter" },
+    ]
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const formData = new FormData(event.currentTarget)
+        const form = event.currentTarget
+        const formData = new FormData(form)
         const data: SignUpData = {
             name: String(formData.get("name") ?? "").trim(),
             email: String(formData.get("email") ?? "").trim(),
             password: String(formData.get("password") ?? ""),
+            role: formData.get("role") === "recruiter" ? "recruiter" : "seeker",
         }
+        // role is collected locally; auth.ts currently disallows role input.
         const res = await authClient.signUp.email({
             name: data.name,
             email: data.email,
             password: data.password,
-            callbackURL: "/"
+            callbackURL: "/",
+            role: data.role
         })
-        console.log(res)
+        if (res.data?.token) {
+            router.push('/')
+            alert("Sign up completed")
+        }
         // Integrate authentication here using data. Credentials stay in memory only.
         setSubmitted(data)
     }
@@ -59,6 +73,20 @@ export default function SignUpPage() {
                     className="mt-8"
                 >
                     <FieldGroup className="gap-5">
+                        {/* Native radios provide keyboard navigation and submit the selected role. */}
+                        <FieldSet className="gap-3">
+                            <FieldLegend className="text-sm text-neutral-200">Choose your account type</FieldLegend>
+                            <div className="grid grid-cols-2 gap-3">
+                                {roleDetails.map((role) => (
+                                    <label key={role.value} className="relative flex cursor-pointer flex-col gap-1 rounded-xl border border-white/10 bg-[#191919] p-4 transition-colors hover:border-[#8b80ff]/60 has-checked:border-[#8b80ff] has-checked:bg-[#6352ff]/10 has-focus-visible:ring-2 has-focus-visible:ring-[#8b80ff]">
+                                        <input type="radio" name="role" value={role.value} defaultChecked={role.value === "seeker"} required className="mb-2 size-4 cursor-pointer accent-[#8b80ff]" />
+                                        <span className="text-sm font-medium text-white">{role.title}</span>
+                                        <span className="text-xs text-neutral-400">{role.description}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </FieldSet>
+
                         <Field className="gap-2">
                             <FieldLabel
                                 htmlFor="name"
