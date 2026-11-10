@@ -10,7 +10,9 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import Image from "next/image"
+import logo from "@/app/assets/images/logo.png"
+import { usePathname, useRouter } from "next/navigation"
 import {
     LayoutDashboard,
     BriefcaseBusiness,
@@ -23,6 +25,7 @@ import {
     HomeIcon,
 } from "lucide-react"
 import { useSession } from "@/lib/auth-client"
+import { useEffect } from "react";
 
 const menuItemsByRole = {
     seeker: [
@@ -67,6 +70,12 @@ const menuItemsByRole = {
 const DashboardSidebar = () => {
     const { data: session, isPending } = useSession()
     const role = session?.user?.role
+    const router = useRouter()
+    useEffect(() => {
+        if (!role && !isPending) {
+            router.replace("/sign-in")
+        }
+    }, [isPending, role, router])
     const pathname = usePathname()
     const menuItems =
         !isPending &&
@@ -74,8 +83,12 @@ const DashboardSidebar = () => {
             ? menuItemsByRole[role]
             : []
     return (
-        <Sidebar>
-            <SidebarHeader />
+        <Sidebar className="border-white/10 text-[#d4d4d8] [--sidebar:#111113] [--sidebar-foreground:#d4d4d8]">
+            <SidebarHeader className="px-4 py-6">
+                <Link href="/" aria-label="Hireloop home" className="w-fit rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8b80ff]">
+                    <Image src={logo} alt="Hireloop" className="h-auto w-38.5" />
+                </Link>
+            </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup />
                 <SidebarGroup />
@@ -86,6 +99,7 @@ const DashboardSidebar = () => {
                                 <SidebarMenuButton
                                     render={<Link href={item.url} />}
                                     isActive={pathname === item.url}
+                                    className="text-[#d4d4d8] hover:bg-[#6352ff]/10 hover:text-[#a79fff] data-active:bg-[#6352ff]/20 data-active:text-[#a79fff]"
                                 >
                                     <item.icon aria-hidden="true" />
                                     <span>{item.name}</span>
