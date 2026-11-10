@@ -13,3 +13,10 @@ export interface JobFormData {
   responsibilities: string
   requirements: string
 }
+
+export interface JobListing extends JobFormData {
+  _id: string
+  applicants: number
+  status: "Active" | "Expired"
+  postedAt: string
+}
