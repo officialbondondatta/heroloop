@@ -23,6 +23,7 @@ import {
     Users,
     Building2,
     HomeIcon,
+    PlusCircleIcon,
 } from "lucide-react"
 import { useSession } from "@/lib/auth-client"
 import { useEffect } from "react";
@@ -48,6 +49,11 @@ const menuItemsByRole = {
             name: "Manage Jobs",
             url: "/dashboard/recruiter/jobs",
             icon: BriefcaseBusiness,
+        },
+        {
+            name: "Add Jobs",
+            url: "/dashboard/recruiter/jobs/new",
+            icon: PlusCircleIcon,
         },
         {
             name: "Applications",
