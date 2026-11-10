@@ -23,7 +23,7 @@ export default function Navbar() {
         { label: "Browse Jobs", href: "/jobs" },
         { label: "Company", href: "/company" },
         { label: "Pricing", href: "/pricing" },
-        { label: "Dashboard", href: `/dashboard/${user?.role}` },
+        ...(user?.role ? [{ label: "Dashboard", href: `/dashboard/${user?.role}` }] : [])
     ]
 
     const handleSignOut = async () => {
