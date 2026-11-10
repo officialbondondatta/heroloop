@@ -15,15 +15,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { signOut, useSession } from "@/lib/auth-client"
 
-const links = [
-    { label: "Browse Jobs", href: "/jobs" },
-    { label: "Company", href: "/company" },
-    { label: "Pricing", href: "/pricing" },
-]
 
 export default function Navbar() {
     const { data: session, isPending } = useSession()
     const user = session?.user
+    const links = [
+        { label: "Browse Jobs", href: "/jobs" },
+        { label: "Company", href: "/company" },
+        { label: "Pricing", href: "/pricing" },
+        { label: "Dashboard", href: `/dashboard/${user?.role}` },
+    ]
 
     const handleSignOut = async () => {
         await signOut()
