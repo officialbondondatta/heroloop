@@ -20,7 +20,7 @@ export default function Navbar() {
     const { data: session, isPending } = useSession()
     const user = session?.user
     const links = [
-        { label: "Browse Jobs", href: "/jobs" },
+        { label: "Browse Jobs", href: "/browse-jobs" },
         { label: "Company", href: "/company" },
         { label: "Pricing", href: "/pricing" },
         ...(user?.role ? [{ label: "Dashboard", href: `/dashboard/${user?.role}` }] : [])

@@ -60,7 +60,7 @@ const AddNewJobPage = () => {
             title: String(formData.get("title") ?? ""),
             company: String(formData.get("company") ?? ""),
             category: String(formData.get("category") ?? ""),
-            employmentType: String(formData.get("employmentType") ?? ""),
+            employmentType: String(formData.get("employmentType") ?? "").toLowerCase(),
             isRemote,
             location: String(formData.get("location") ?? ""),
             deadline: String(formData.get("deadline") ?? ""),
