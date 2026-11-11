@@ -1,13 +1,10 @@
 "use client"
 
-import { Banknote, Bookmark, Clock3 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import SearchBar from "@/components/shared/SearchBar"
-import { Badge } from "@/components/ui/badge"
+import JobCard from "@/components/shared/JobCard"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { jobTypes, type JobListing } from "@/types/job"
-import { useRouter, useSearchParams } from "next/navigation";
-
+import { useRouter, useSearchParams } from "next/navigation"
 
 const categoryOptions = [
   { value: "Analytics", label: "Analytics" },
@@ -15,7 +12,7 @@ const categoryOptions = [
   { value: "Marketing", label: "Marketing & Sales" },
   { value: "Quality", label: "Quality" },
   { value: "Operations", label: "Operations" },
-  { value: "Engineering", label: "Engineering" }
+  { value: "Engineering", label: "Engineering" },
 ]
 const sortOptions = [
   { value: "recent", label: "Most Recent" },
@@ -28,13 +25,15 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
   const searchParams = useSearchParams()
   const handleSearch = (query: string) => {
     const params = new URLSearchParams(searchParams.toString())
-    if (query.trim()) params.set('search', query.trim())
-    else params.delete('search')
+    if (query.trim()) params.set("search", query.trim())
+    else params.delete("search")
     router.push(`/browse-jobs?${params.toString()}`, { scroll: false })
   }
 
-
-  const handleFilter = (filter: "employmentType" | "category", value: string) => {
+  const handleFilter = (
+    filter: "employmentType" | "category",
+    value: string
+  ) => {
     const params = new URLSearchParams(searchParams.toString())
 
     if (value) {
@@ -46,11 +45,9 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
     router.push(`/browse-jobs?${params.toString()}`, { scroll: false })
   }
 
-
   const handleSort = (sort: string) => {
     console.log({ sort })
   }
-
 
   const handleSave = (jobId: string) => {
     console.log({ saveJob: jobId })
@@ -180,54 +177,7 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
 
             <div className="space-y-3.5">
               {jobs.map((job) => (
-                <article
-                  key={job._id}
-                  className="flex gap-4 rounded-2xl border border-white/10 bg-[#131316] p-5 sm:gap-6 sm:p-7"
-                >
-                  {/* Company initials stand in for logos until logo URLs are available. */}
-                  <div
-                    aria-hidden="true"
-                    className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-white/5 bg-[#222228] text-sm font-semibold text-violet-200 sm:size-16"
-                  >
-                    {job.company.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-lg font-semibold tracking-tight sm:text-2xl">
-                        {job.title}
-                      </h3>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleSave(job._id)}
-                        aria-label={`Save ${job.title}`}
-                        className="shrink-0 text-neutral-400 hover:bg-white/5 hover:text-white"
-                      >
-                        <Bookmark aria-hidden="true" className="size-5" />
-                      </Button>
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-neutral-500 sm:text-base">
-                      {job.company} • {job.location}
-                      {job.isRemote ? " (Remote)" : ""}
-                    </p>
-                    <div className="mt-6 flex flex-wrap gap-3 sm:mb-3">
-                      <Badge
-                        variant="outline"
-                        className="gap-2 rounded-lg border-white/10 bg-white/[0.025] px-3 py-1.5 font-normal text-neutral-200"
-                      >
-                        <Banknote aria-hidden="true" className="size-4" />€
-                        {job.minSalary} – €{job.maxSalary} / {job.frequency}
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className="gap-2 rounded-lg border-white/10 bg-white/[0.025] px-3 py-1.5 font-normal text-neutral-200"
-                      >
-                        <Clock3 aria-hidden="true" className="size-4" />
-                        {job.employmentType}
-                      </Badge>
-                    </div>
-                  </div>
-                </article>
+                <JobCard key={job._id} job={job} onSave={handleSave} />
               ))}
               {jobs.length === 0 && (
                 <p className="rounded-2xl border border-white/10 bg-[#131316] p-8 text-center text-neutral-400">
