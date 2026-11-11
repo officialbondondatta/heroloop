@@ -1,14 +1,22 @@
 "use client"
 
-import type { FormEvent } from "react"
-import { Banknote, Bookmark, Clock3, Search } from "lucide-react"
+import { Banknote, Bookmark, Clock3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import SearchBar from "@/components/shared/SearchBar"
 import { Badge } from "@/components/ui/badge"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
-import type { JobListing } from "@/types/job"
+import { jobTypes, type JobListing } from "@/types/job"
+import { useRouter } from "next/navigation";
 
-const jobTypes = ["Full-time", "Contract", "Freelance"]
+
+const categoryOptions = [
+  { value: "Analytics", label: "Analytics" },
+  { value: "Design", label: "Design & Creative" },
+  { value: "Marketing", label: "Marketing & Sales" },
+  { value: "Quality", label: "Quality" },
+  { value: "Operations", label: "Operations" },
+  { value: "Engineering", label: "Engineering" }
+]
 const sortOptions = [
   { value: "recent", label: "Most Recent" },
   { value: "salary", label: "Highest Salary" },
@@ -16,17 +24,32 @@ const sortOptions = [
 ]
 
 const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
-  // UI handlers only: these do not search, filter, sort, or save jobs yet.
-  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    console.log({ search: new FormData(event.currentTarget).get("search") })
+  const router = useRouter()
+  const handleSearch = (query: string) => {
+    const params = new URLSearchParams()
+    params.set('search', query as string)
+    router.push(`/browse-jobs?${params.toString()}`)
   }
-  const handleFilter = (jobType: string, checked: boolean) => {
-    console.log({ jobType, checked })
+
+
+  const handleFilter = (filter: "employmentType" | "category", value: string) => {
+    const params = new URLSearchParams()
+
+    if (value) {
+      params.set(filter, value)
+    } else {
+      params.delete(filter)
+    }
+
+    router.push(`/browse-jobs?${params.toString()}`)
   }
+
+
   const handleSort = (sort: string) => {
     console.log({ sort })
   }
+
+
   const handleSave = (jobId: string) => {
     console.log({ saveJob: jobId })
   }
@@ -35,34 +58,12 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
     <main className="min-h-screen bg-[#09090b] px-4 py-7 text-[#e5e5e7] sm:px-6 lg:px-9">
       <div className="mx-auto max-w-360">
         <h1 className="sr-only">Browse jobs</h1>
-        <form
-          onSubmit={handleSearch}
-          role="search"
-          aria-label="Search jobs"
-          className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-[#131316] p-5 sm:flex-row sm:p-7"
-        >
-          <div className="relative flex-1">
-            <label htmlFor="job-search" className="sr-only">
-              Search by job title or keywords
-            </label>
-            <Search
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-neutral-400"
-            />
-            <Input
-              id="job-search"
-              name="search"
-              placeholder="Search by job title, keywords..."
-              className="h-14 rounded-xl border-white/10 bg-[#1a1a1e] pl-12 text-white placeholder:text-neutral-400 focus-visible:ring-violet-400/30 sm:h-16 dark:bg-[#1a1a1e]"
-            />
-          </div>
-          <Button
-            type="submit"
-            className="h-14 rounded-xl bg-white px-7 text-base font-semibold text-neutral-800 hover:bg-neutral-200 sm:h-16"
-          >
-            Search Jobs
-          </Button>
-        </form>
+        <SearchBar
+          onSearch={handleSearch}
+          placeholder="Search by job title, keywords..."
+          buttonText="Search Jobs"
+          label="Search by job title or keywords"
+        />
 
         <div className="mt-7 grid items-start gap-7 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-9">
           <aside
@@ -75,23 +76,69 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
             <fieldset className="mt-7">
               <legend className="mb-5 text-lg font-medium">Job Type</legend>
               <div className="space-y-4">
+                <label className="flex cursor-pointer items-center gap-3 text-sm text-neutral-400">
+                  <input
+                    type="radio"
+                    name="employmentType"
+                    value=""
+                    defaultChecked
+                    onChange={() => handleFilter("employmentType", "")}
+                    className="size-5 cursor-pointer accent-[#6352ff]"
+                  />
+                  <span>All types</span>
+                </label>
                 {jobTypes.map((type) => (
                   <label
                     key={type}
                     className="flex cursor-pointer items-center gap-3 text-sm text-neutral-400"
                   >
                     <input
-                      type="checkbox"
-                      name="jobType"
+                      type="radio"
+                      name="employmentType"
                       value={type}
-                      onChange={(event) =>
-                        handleFilter(type, event.target.checked)
-                      }
-                      className="size-5 cursor-pointer accent-white"
+                      onChange={() => handleFilter("employmentType", type)}
+                      className="size-5 cursor-pointer accent-[#6352ff]"
                     />
                     <span>{type}</span>
                     <span className="ml-auto text-xs text-neutral-500">
                       {jobs.filter((job) => job.employmentType === type).length}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset className="mt-7 border-t border-white/10 pt-6">
+              <legend className="pt-6 text-lg font-medium">Job Category</legend>
+              <div className="mt-5 space-y-4">
+                <label className="flex cursor-pointer items-center gap-3 text-sm text-neutral-400">
+                  <input
+                    type="radio"
+                    name="category"
+                    value=""
+                    defaultChecked
+                    onChange={() => handleFilter("category", "")}
+                    className="size-5 cursor-pointer accent-[#6352ff]"
+                  />
+                  <span>All categories</span>
+                </label>
+                {categoryOptions.map((category) => (
+                  <label
+                    key={category.value}
+                    className="flex cursor-pointer items-center gap-3 text-sm text-neutral-400"
+                  >
+                    <input
+                      type="radio"
+                      name="category"
+                      value={category.value}
+                      onChange={() => handleFilter("category", category.value)}
+                      className="size-5 cursor-pointer accent-[#6352ff]"
+                    />
+                    <span>{category.label}</span>
+                    <span className="ml-auto text-xs text-neutral-500">
+                      {
+                        jobs.filter((job) => job.category === category.value)
+                          .length
+                      }
                     </span>
                   </label>
                 ))}

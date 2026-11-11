@@ -20,3 +20,11 @@ export interface JobListing extends JobFormData {
   status: "Active" | "Expired"
   postedAt: string
 }
+
+export const jobTypes = [
+  "full-time",
+  "part-time",
+  "contract",
+  "internship",
+  "freelance",
+]
