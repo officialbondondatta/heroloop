@@ -15,7 +15,6 @@ import {
     MapPin,
     Users,
     Pencil,
-    Trash2,
     EllipsisVertical,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -31,6 +30,7 @@ import {
 import { getJob } from "@/lib/actions/jobs";
 import { useEffect, useState } from "react";
 import { JobListing } from "@/types/job";
+import { DeleteJobsAlert } from "@/app/components/DeleteJobsAlert";
 
 
 const tableHeaders = [
@@ -224,14 +224,10 @@ const ManageJobsPage = () => {
                                                 <Pencil aria-hidden="true" className="size-4" />
                                                 Update
                                             </Button>
-                                            <Button
-                                                size="icon-sm"
-                                                onClick={() => handleAction("delete", job._id)}
-                                                aria-label={`Delete ${job.title}`}
-                                                className="rounded-lg bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white"
-                                            >
-                                                <Trash2 aria-hidden="true" className="size-4" />
-                                            </Button>
+                                            <DeleteJobsAlert
+                                                job={job}
+                                                onDeleted={() => setJobs((previous) => previous.filter((item) => item._id !== job._id))}
+                                            />
                                             <Button
                                                 size="icon-sm"
                                                 onClick={() => handleAction("more", job._id)}

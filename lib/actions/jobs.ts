@@ -17,3 +17,13 @@ export const getJob = async () => {
     const result = await fetch(`${BASEURL}/jobs`)
     return result.json()
 }
+
+export const deleteJob = async (jobid: string) => {
+    const result = await fetch(`${BASEURL}/jobs/${jobid}`, {
+        method: "DELETE"
+    })
+    if (!result.ok) {
+        throw new Error("Failed to delete job")
+    }
+    // Deletion only needs a successful status, including 204 with no body.
+}
