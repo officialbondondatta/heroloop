@@ -6,7 +6,7 @@ import SearchBar from "@/components/shared/SearchBar"
 import { Badge } from "@/components/ui/badge"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { jobTypes, type JobListing } from "@/types/job"
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 
 const categoryOptions = [
@@ -25,15 +25,17 @@ const sortOptions = [
 
 const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const handleSearch = (query: string) => {
-    const params = new URLSearchParams()
-    params.set('search', query as string)
-    router.push(`/browse-jobs?${params.toString()}`)
+    const params = new URLSearchParams(searchParams.toString())
+    if (query.trim()) params.set('search', query.trim())
+    else params.delete('search')
+    router.push(`/browse-jobs?${params.toString()}`, { scroll: false })
   }
 
 
   const handleFilter = (filter: "employmentType" | "category", value: string) => {
-    const params = new URLSearchParams()
+    const params = new URLSearchParams(searchParams.toString())
 
     if (value) {
       params.set(filter, value)
@@ -41,7 +43,7 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
       params.delete(filter)
     }
 
-    router.push(`/browse-jobs?${params.toString()}`)
+    router.push(`/browse-jobs?${params.toString()}`, { scroll: false })
   }
 
 
@@ -81,7 +83,7 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
                     type="radio"
                     name="employmentType"
                     value=""
-                    defaultChecked
+                    checked={!searchParams.get("employmentType")}
                     onChange={() => handleFilter("employmentType", "")}
                     className="size-5 cursor-pointer accent-[#6352ff]"
                   />
@@ -96,6 +98,7 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
                       type="radio"
                       name="employmentType"
                       value={type}
+                      checked={searchParams.get("employmentType") === type}
                       onChange={() => handleFilter("employmentType", type)}
                       className="size-5 cursor-pointer accent-[#6352ff]"
                     />
@@ -115,7 +118,7 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
                     type="radio"
                     name="category"
                     value=""
-                    defaultChecked
+                    checked={!searchParams.get("category")}
                     onChange={() => handleFilter("category", "")}
                     className="size-5 cursor-pointer accent-[#6352ff]"
                   />
@@ -130,6 +133,7 @@ const BrowseJobs = ({ jobs }: { jobs: JobListing[] }) => {
                       type="radio"
                       name="category"
                       value={category.value}
+                      checked={searchParams.get("category") === category.value}
                       onChange={() => handleFilter("category", category.value)}
                       className="size-5 cursor-pointer accent-[#6352ff]"
                     />
