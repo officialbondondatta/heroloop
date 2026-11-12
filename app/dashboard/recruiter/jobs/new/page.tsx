@@ -172,7 +172,7 @@ const AddNewJobPage = () => {
                                 {jobTypes.map((type) => (
                                     <label
                                         key={type}
-                                        className="flex h-12 cursor-pointer items-center justify-center rounded-xl border border-transparent bg-[#202023] text-sm text-neutral-400 has-[:checked]:border-[#6352ff] has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#8b80ff]"
+                                        className="flex h-12 cursor-pointer items-center justify-center rounded-xl border border-transparent bg-[#202023] text-sm text-neutral-400 has-checked:border-[#6352ff] has-checked:text-white has-focus-visible:ring-2 has-focus-visible:ring-[#8b80ff]"
                                     >
                                         <input
                                             type="radio"
