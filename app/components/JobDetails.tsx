@@ -10,21 +10,55 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { JobListing } from "@/types/job"
-import { useSession } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useState } from "react"
+import type { JobApplication } from "@/types/application"
+import { useSession } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
+import { applyToAJob } from "@/lib/actions/appilcations"
 
 const panelClassName = "rounded-xl border border-white/10 bg-[#131316]"
 
 const JobDetails = ({ job }: { job: JobListing }) => {
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session, isPending } = useSession()
   const user = session?.user
-  const handleApply = () => {
+  const [isApplying, setIsApplying] = useState(false)
+  const [applied, setApplied] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleApply = async () => {
+    if (isPending || isApplying || applied) return
+    setError("")
     if (!user) {
-      router.push(`/sign-in?redirectTo=/browse-jobs/${job._id}`)
+      router.push(
+        `/sign-in?redirectTo=${encodeURIComponent(`/browse-jobs/${job._id}`)}`
+      )
       return
-    } else {
-      console.log({ applyForJob: job._id })
+    }
+    if (user.role !== "seeker") {
+      setError("You need a job seeker account to apply.")
+      return
+    }
+
+    const application: JobApplication = {
+      userId: user.id,
+      jobId: job._id,
+      title: job.title,
+      company: job.company,
+    }
+
+    setIsApplying(true)
+    try {
+      await applyToAJob(application)
+      setApplied(true)
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unable to submit your application."
+      )
+    } finally {
+      setIsApplying(false)
     }
   }
   const handleSave = () => {
@@ -84,12 +118,23 @@ const JobDetails = ({ job }: { job: JobListing }) => {
             </Button>
             <Button
               onClick={handleApply}
+              disabled={isPending || isApplying || applied}
               className="h-12 rounded-lg bg-white px-6 text-black hover:bg-neutral-200"
             >
-              Apply Now
+              {isApplying ? "Applying…" : applied ? "Applied" : "Apply Now"}
             </Button>
           </div>
         </header>
+        {error && (
+          <p role="alert" className="mt-4 text-sm text-red-400">
+            {error}
+          </p>
+        )}
+        {applied && (
+          <p role="status" className="mt-4 text-sm text-emerald-400">
+            Application submitted successfully.
+          </p>
+        )}
 
         <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
           <div className="min-w-0 space-y-6">

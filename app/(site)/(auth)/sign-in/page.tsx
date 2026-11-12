@@ -18,7 +18,10 @@ export default function SignInPage() {
     const [submitted, setSubmitted] = useState<SignInData | null>(null)
     const router = useRouter()
     const params = useSearchParams()
-    const redirectTo = params.get("redirectTo") || "/"
+    const requestedRedirect = params.get("redirectTo")
+    const redirectTo = requestedRedirect?.startsWith("/browse-jobs/") && !requestedRedirect.includes("\\")
+        ? requestedRedirect
+        : "/"
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const formData = new FormData(event.currentTarget)
@@ -32,7 +35,7 @@ export default function SignInPage() {
             callbackURL: redirectTo
         })
         if (res.data?.token) {
-            router.push('/')
+            router.push(redirectTo)
             alert("Sign in succeessful")
         }
         // Integrate authentication here using data. Credentials stay in memory only.
