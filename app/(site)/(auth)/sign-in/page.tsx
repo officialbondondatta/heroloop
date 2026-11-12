@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type SignInData = { email: string; password: string }
 const inputClassName =
@@ -17,6 +17,8 @@ export default function SignInPage() {
     const [showPassword, setShowPassword] = useState(false)
     const [submitted, setSubmitted] = useState<SignInData | null>(null)
     const router = useRouter()
+    const params = useSearchParams()
+    const redirectTo = params.get("redirectTo") || "/"
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const formData = new FormData(event.currentTarget)
@@ -27,7 +29,7 @@ export default function SignInPage() {
         const res = await authClient.signIn.email({
             email: data.email,
             password: data.password,
-            callbackURL: "/"
+            callbackURL: redirectTo
         })
         if (res.data?.token) {
             router.push('/')

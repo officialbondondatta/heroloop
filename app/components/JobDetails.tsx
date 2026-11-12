@@ -10,13 +10,22 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { JobListing } from "@/types/job"
+import { useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const panelClassName = "rounded-xl border border-white/10 bg-[#131316]"
 
 const JobDetails = ({ job }: { job: JobListing }) => {
-  // Placeholders only; no application or bookmark is saved.
+  const router = useRouter()
+  const { data: session } = useSession()
+  const user = session?.user
   const handleApply = () => {
-    console.log({ applyForJob: job._id })
+    if (!user) {
+      router.push(`/sign-in?redirectTo=/browse-jobs/${job._id}`)
+      return
+    } else {
+      console.log({ applyForJob: job._id })
+    }
   }
   const handleSave = () => {
     console.log({ saveJob: job._id })
