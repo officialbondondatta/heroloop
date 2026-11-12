@@ -18,6 +18,12 @@ export const getJob = async (query = "") => {
     return result.json()
 }
 
+export const getJobById = async (id: string) => {
+    const result = await fetch(`${BASEURL}/jobs/${encodeURIComponent(id)}`)
+    if (result.status === 404) return null
+    if (!result.ok) throw new Error("Failed to fetch job")
+    return result.json()
+}
 export const deleteJob = async (jobid: string) => {
     const result = await fetch(`${BASEURL}/jobs/${jobid}`, {
         method: "DELETE"
