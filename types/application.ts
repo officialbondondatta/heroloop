@@ -18,3 +18,16 @@ export interface ApplicationListing extends JobApplication {
   isRemote?: boolean
   archived?: boolean
 }
+
+export interface IUser {
+  _id?: string,
+  id: string,
+  createdAt: Date,
+  updatedAt: Date,
+  email: string,
+  emailVerified: boolean,
+  name: string,
+  image?: string | null | undefined,
+  role: "admin" | "recruiter" | "seeker",
+
+}

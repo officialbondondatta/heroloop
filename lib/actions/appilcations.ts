@@ -30,6 +30,14 @@ export const applyToAJob = async (
   return application
 }
 
+
+export const getApplicationsCountByUserId = async (userId: string): Promise<{ count: number }> => {
+  const query = new URLSearchParams({ userId })
+  const res = await fetch(`${BASEURL}/applications/count?${query}`)
+  const result = res.json()
+  return result
+}
+
 export const getApplicationsByUserId = async (
   userId: string
 ): Promise<ApplicationListing[]> => {
