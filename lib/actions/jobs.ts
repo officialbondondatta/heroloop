@@ -33,3 +33,11 @@ export const deleteJob = async (jobid: string) => {
     }
     // Deletion only needs a successful status, including 204 with no body.
 }
+
+export const getAllJobsByID = async (id: string) => {
+    const result = await fetch(`${BASEURL}/jobs/${id}/specific`)
+    if (!result.ok) {
+        throw new Error("Failed to fetch jobs")
+    }
+    return result.json()
+}

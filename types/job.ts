@@ -6,6 +6,7 @@ export interface JobFormData {
   isRemote: boolean
   location: string
   deadline: string
+  recruiterId: string
   // Form inputs return strings, including salary amounts and empty values.
   minSalary: string
   maxSalary: string

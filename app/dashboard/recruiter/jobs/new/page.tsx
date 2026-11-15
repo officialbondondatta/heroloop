@@ -24,6 +24,7 @@ import {
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import type { JobFormData } from "@/types/job"
 import { createJob } from "@/lib/actions/jobs";
+import { useSession } from "@/lib/auth-client";
 
 const categoryOptions = [
     { value: "engineering", label: "Engineering & Tech" },
@@ -51,7 +52,8 @@ const headingClassName =
 
 const AddNewJobPage = () => {
     const [isRemote, setIsRemote] = useState(false)
-
+    const { data: sesssion } = useSession()
+    const recruiterId = sesssion?.user?.id || "";
     // Collect values only; the Publish button does not send or save anything yet.
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -62,6 +64,7 @@ const AddNewJobPage = () => {
             category: String(formData.get("category") ?? ""),
             employmentType: String(formData.get("employmentType") ?? "").toLowerCase(),
             isRemote,
+            recruiterId,
             location: String(formData.get("location") ?? ""),
             deadline: String(formData.get("deadline") ?? ""),
             minSalary: String(formData.get("minSalary") ?? ""),
