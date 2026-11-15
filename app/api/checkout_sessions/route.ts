@@ -21,6 +21,10 @@ export async function POST() {
             ],
             mode: 'payment',
             customer_email: UserSession?.user?.email,
+            metadata: {
+                userId: UserSession?.user?.id ?? null,
+            },
+            cancel_url: `${origin}/payment/cancel`,
             success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
             // Provide a name (for example, hosted_web_0001) to label this Checkout integration and measure its conversion independently
             integration_identifier: 'heroloop-hosted-web-0001',
