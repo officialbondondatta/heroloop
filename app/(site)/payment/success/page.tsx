@@ -1,11 +1,12 @@
 
 
 import { stripe } from '@/lib/stripe';
+import { checkoutVerify } from '@/lib/actions/payment';
 import { redirect } from 'next/navigation'
 
 
 
-export default async function Success({ searchParams }: { searchParams: { session_id?: string } }) {
+export default async function Success({ searchParams }: { searchParams: Promise<{ session_id?: string }> }) {
     const { session_id } = await searchParams
 
     if (!session_id)
@@ -15,6 +16,7 @@ export default async function Success({ searchParams }: { searchParams: { sessio
         payment_intent,
         payment_status,
         status,
+        metadata,
         customer_email
     } = await stripe.checkout.sessions.retrieve(session_id, {
         expand: ['line_items', 'payment_intent']
@@ -25,8 +27,9 @@ export default async function Success({ searchParams }: { searchParams: { sessio
     }
 
     if (status === 'complete' && payment_status === 'paid') {
-        console.log(payment_status, status, customer_email)
-        console.log(payment_intent)
+        const result = await checkoutVerify(session_id)
+        console.log(result)
+        console.log(payment_status, status, customer_email, metadata, payment_intent)
         return (
             <section id="success">
                 <p>
