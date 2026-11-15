@@ -15,6 +15,7 @@ import type { IUser, JobApplication } from "@/types/application"
 import { useSession } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { applyToAJob, getApplicationsCountByUserId } from "@/lib/actions/appilcations"
+import { getPremiumStatusById } from "@/lib/actions/premium";
 
 const panelClassName = "rounded-xl border border-white/10 bg-[#131316]"
 
@@ -41,8 +42,8 @@ const JobDetails = ({ job }: { job: JobListing }) => {
     }
 
     const isEligible = await getApplicationsCountByUserId(user.id)
-
-    if (isEligible.count >= 3) {
+    const isPremium = await getPremiumStatusById(user.id)
+    if (!isPremium.premium && isEligible.count >= 3) {
       router.push('/payment')
       return
     }
